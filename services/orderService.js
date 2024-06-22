@@ -3,6 +3,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 const Order = require('./../models/orderModel');
 const Cart = require("./../models/cartModel");
 const Product = require("./../models/productModel");
+const User = require("./../models/userModel");
 const factory = require('./handlerFactory')
 
 const ApiError = require('./../utils/apiError');
@@ -93,6 +94,7 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
   // const totalOrderPrice = (cartPrice) + parseInt(taxPrice) + parseInt(shippingPrice);
   const totalOrderPrice = cartPrice + taxPrice + shippingPrice;
   const session = await stripe.checkout.sessions.create({
+    
     line_items: [
       {
         
@@ -107,6 +109,7 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
         quantity: 1
       }
     ],
+    customer_email:req.user._id,
     mode: 'payment',
     success_url: `${req.protocol}://${req.get('host')}/orders`,
     cancel_url: `${req.protocol}://${req.get('host')}/cart`,
@@ -120,6 +123,39 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
 
 })
 
+const createCartOrder = async(session) => {
+  const cartId = session.client_reference_id;
+  const shippingAddress = session.metadata;
+  const orderPrice = session.amount_total;
+
+  const cart = await Cart.findById(cartId);
+  const user = User.findOne({ email: session.customer_email });
+
+  // create order
+  const order = await Order.create({
+    user: user._id,
+    cartItems: cart.cartItems,
+    shippingAddress: req.body.shippingAddress,
+    taxPrice,
+    shippingPrice,
+    totalOrderPrice: orderPrice,
+    isPaid: true,
+    paidAt: Date.now(),
+    paymentMethodType:'card',
+  });
+  if(order){
+    var bulkOption = cart.cartItems.map((i) => ({
+      updateOne: {
+        filter: { _id: i.product },
+        update: { $inc: { quantity: -i.quantity, sold: +i.quantity } },
+      },
+    }));
+    }
+  await Product.bulkWrite(bulkOption, {})
+
+  await Cart.findByIdAndDelete(cartId);
+
+}
 
 exports.weebhookCheckOut = asyncHandler(async (req, res, next) => {
   const sig = req.headers['stripe-signature'];
@@ -133,8 +169,9 @@ exports.weebhookCheckOut = asyncHandler(async (req, res, next) => {
     
   }
   if (event.type === 'checkout.session.completed') {
-    console.log("Create Order Here ..... ");
-    const session = event.data.object.client_reference_id;
-    console.log(session)
+
+    createCartOrder(event.data.object)
+    res.status(201).json({ recieved:true });
+
   }
 })
