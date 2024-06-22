@@ -133,6 +133,8 @@ exports.weebhookCheckOut = asyncHandler(async (req, res, next) => {
     
   }
   if (event.type === 'checkout.session.completed') {
-    console.log("Create Order Here ..... ")
+    console.log("Create Order Here ..... ");
+    const session = event.data.object.client_reference_id;
+    console.log(session)
   }
 })
