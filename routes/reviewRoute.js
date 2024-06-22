@@ -17,18 +17,18 @@ const {
 } = require("./../utils/validators/reviewValidator");
 const { protect, allowTo } = require("../services/authService");
 const router = express.Router({mergeParams:true});
-router.use(protect);
+
 router.get('/my-reviews',allowTo('user'),getLoggedUserReviews);
 router
   .route("/")
   .get(createFilterObj,getAllReviews)
-  .post(allowTo("user"),setProductIdToBody,createReviewValidator, createReview)
-  .delete(allowTo("admin"), deleteAllReviews);
+  .post(protect,allowTo("user"),setProductIdToBody,createReviewValidator, createReview)
+  .delete(protect,allowTo("admin"), deleteAllReviews);
 
 router
   .route("/:id")
   .get(getReview)
-  .put(allowTo("user"), updateReviewValidator,updateReview)
-  .delete(allowTo("user", "admin", "manager"),deleteReviewValidator,deleteReview);
+  .put(protect,allowTo("user"), updateReviewValidator,updateReview)
+  .delete(protect,allowTo("user", "admin", "manager"),deleteReviewValidator,deleteReview);
 
 module.exports = router;
