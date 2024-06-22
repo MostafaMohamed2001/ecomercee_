@@ -53,9 +53,6 @@ exports.protect = asyncHandler(async (req, res, next) => {
     req.headers.authorization.startsWith("Bearer")
   ) {
     token = req.headers.authorization.split(" ")[1];
-  } else {
-    console.log("hello from barere")
-    return true;
   }
   console.log(" out hello from barere")
   // console.log(req.headers)
