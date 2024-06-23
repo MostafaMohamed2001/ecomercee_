@@ -173,7 +173,9 @@ exports.weebhookCheckOut = asyncHandler(async (req, res, next) => {
   }
   if (event.type === 'checkout.session.completed') {
     console.log("hello from out side")
-    createCartOrder(event.data.object)
+    // createCartOrder(event.data.object)
+    console.log(event.data.object)
+  
     res.status(201).json({ recieved:true });
 
   }
