@@ -132,7 +132,7 @@ const createCartOrder = async (session) => {
 
   const cart = await Cart.findById(cartId);
   
-  const user = await User.findOne({ email: session.email });
+  const user = await User.findOne({ email: session.customer_email });
   console.log(cart , user , cartId , shippingAddress , orderPrice)
   // create order
   const order = await Order.create({
