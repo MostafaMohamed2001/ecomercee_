@@ -113,6 +113,7 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
     mode: 'payment',
     success_url: `${req.protocol}://${req.get('host')}/orders`,
     cancel_url: `${req.protocol}://${req.get('host')}/cart`,
+    customer_email: req.user.email,
     client_reference_id: req.params.cartId,
     metadata: req.body.shippingAddress
   });
@@ -123,14 +124,15 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
 
 })
 
-const createCartOrder = async(session) => {
+const createCartOrder = async (session) => {
+  console.log("hello fron inside fun")
   const cartId = session.client_reference_id;
   const shippingAddress = session.metadata;
   const orderPrice = session.amount_total / 100;
 
   const cart = await Cart.findById(cartId);
   
-  const user = User.findOne({ email: session.email });
+  const user = await User.findOne({ email: session.email });
   console.log(cart , user , cartId , shippingAddress , orderPrice)
   // create order
   const order = await Order.create({
@@ -170,7 +172,7 @@ exports.weebhookCheckOut = asyncHandler(async (req, res, next) => {
     
   }
   if (event.type === 'checkout.session.completed') {
-
+    console.log("hello from out side")
     createCartOrder(event.data.object)
     res.status(201).json({ recieved:true });
 
