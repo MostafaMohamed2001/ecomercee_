@@ -133,14 +133,12 @@ const createCartOrder = async (session) => {
   const cart = await Cart.findById(cartId);
   
   const user = await User.findOne({ email: session.customer_email });
-  console.log(cart , user , cartId , shippingAddress , orderPrice)
+  console.log(cart , user , cartId , shippingAddress , orderPrice , "Product")
   // create order
   const order = await Order.create({
     user: user._id,
     cartItems: cart.cartItems,
     shippingAddress,
-    taxPrice,
-    shippingPrice,
     totalOrderPrice: orderPrice,
     isPaid: true,
     paidAt: Date.now(),
