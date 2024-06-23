@@ -7,7 +7,7 @@ const crypto = require('crypto');
 const ApiError = require("./../utils/apiError");
 const createToken = require("./../utils/createToken");
 const sendEmail = require('../utils/sendEmail');
-
+const {sanitizeUser} = require('./../utils/sanitizeData')
 
 
 exports.sighup = asyncHandler(async (req, res, next) => {
@@ -21,7 +21,7 @@ exports.sighup = asyncHandler(async (req, res, next) => {
     // Delete password from response
   delete user._doc.password;
   res.status(201).json({
-    data: user,
+    data: sanitizeUser(user),
     token: token,
   });
 });
@@ -37,11 +37,13 @@ exports.login = asyncHandler(async (req, res, next) => {
   }
   // 3) generate token
   const token = createToken(user._id);
+  res.cookie("jwt", token)
+ 
 
   // Delete password from response
   delete user._doc.password;
   // 4) send response to client side
-  res.status(200).json({ data: user, token });
+  res.status(200).json({ data: sanitizeUser(user), token });
 });
 
 exports.protect = asyncHandler(async (req, res, next) => {
@@ -53,6 +55,8 @@ exports.protect = asyncHandler(async (req, res, next) => {
     req.headers.authorization.startsWith("Bearer")
   ) {
     token = req.headers.authorization.split(" ")[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
   console.log(" out hello from barere")
   // console.log(req.headers)
