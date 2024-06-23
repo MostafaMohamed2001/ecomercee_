@@ -9,7 +9,7 @@ const rateLimit = require("express-rate-limit");
 const hpp = require('hpp');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean')
-
+const cookieParser = require('cookie-parser')
 
 dotenv.config({ path: "config.env" });
 const ApiError = require("./utils/apiError");
@@ -20,12 +20,16 @@ const dbConnection = require("./config/database");
 // Routes
 const mountRoutes = require("./routes");
 const { weebhookCheckOut } = require("./services/orderService");
+const { cookie } = require("express-validator");
 
 //Connect to db
 dbConnection();
 
 //Express App
 const app = express();
+
+//Cookie
+app.use(cookieParser  ())
 
 // Enable other domains to access your application
 app.use(cors());
