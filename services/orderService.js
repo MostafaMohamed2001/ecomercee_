@@ -126,7 +126,7 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
 const createCartOrder = async(session) => {
   const cartId = session.client_reference_id;
   const shippingAddress = session.metadata;
-  const orderPrice = session.amount_total;
+  const orderPrice = session.amount_total / 100;
 
   const cart = await Cart.findById(cartId);
   const user = User.findOne({ email: session.customer_email });
@@ -135,7 +135,7 @@ const createCartOrder = async(session) => {
   const order = await Order.create({
     user: user._id,
     cartItems: cart.cartItems,
-    shippingAddress: req.body.shippingAddress,
+    shippingAddress,
     taxPrice,
     shippingPrice,
     totalOrderPrice: orderPrice,
