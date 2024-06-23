@@ -109,7 +109,7 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
         quantity: 1
       }
     ],
-    customer_email:req.user._id,
+
     mode: 'payment',
     success_url: `${req.protocol}://${req.get('host')}/orders`,
     cancel_url: `${req.protocol}://${req.get('host')}/cart`,
