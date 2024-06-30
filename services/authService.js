@@ -5,10 +5,8 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require("bcryptjs");
 const crypto = require('crypto');
 const ApiError = require("./../utils/apiError");
-const createToken = require("./../utils/createToken");
+const setTokenAndCookies = require("./../utils/createToken");
 const sendEmail = require('../utils/sendEmail');
-const {sanitizeUser} = require('./../utils/sanitizeData')
-
 
 exports.sighup = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -17,13 +15,8 @@ exports.sighup = asyncHandler(async (req, res, next) => {
     email: email,
     password: password,
   });
-  const token = createToken(user._id);
-    // Delete password from response
   delete user._doc.password;
-  res.status(201).json({
-    data: sanitizeUser(user),
-    token: token,
-  });
+  setTokenAndCookies(user, 201, res);
 });
 
 exports.login = asyncHandler(async (req, res, next) => {
@@ -35,15 +28,10 @@ exports.login = asyncHandler(async (req, res, next) => {
     return next(new ApiError('Incorrect email or password', 401));
     
   }
-  // 3) generate token
-  const token = createToken(user._id);
-  res.cookie("jwt", token)
- 
-
-  // Delete password from response
   delete user._doc.password;
-  // 4) send response to client side
-  res.status(200).json({ data: sanitizeUser(user), token });
+  
+  setTokenAndCookies(user, 201, res);
+
 });
 
 exports.protect = asyncHandler(async (req, res, next) => {
@@ -55,12 +43,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
     req.headers.authorization.startsWith("Bearer")
   ) {
     token = req.headers.authorization.split(" ")[1];
-  } else if (req.cookies.jwt) {
-    token = req.cookies.jwt;
   }
-  console.log(" out hello from barere")
-  // console.log(req.headers)
-  // console.log(token);
   if (!token  || token === 'null') {
     return next(
       new ApiError(
@@ -70,14 +53,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
     );
   }
   //2 
-
     var decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-  
-    
- 
- 
-  // console.log(decoded);
-
   //3
   const currentUser = await User.findById(decoded.userId);
   if (!currentUser) {
@@ -194,9 +170,6 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 
   await user.save();
   delete user._doc.password;
-  const token = createToken(user._id);
-  res.status(201).json({
-    data: user,
-    token: token,
-  });
+  setTokenAndCookies(user, 201, res);
+
 });

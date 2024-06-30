@@ -66,4 +66,4 @@ reviewSchema.post('remove', async function () {
   await this.constructor.calacAverageRatingsQuantity(this.product);
 })
 const ReviewdModel = mongoose.model('Review', reviewSchema) 
-module.exports = ReviewdModel;
+module.exports = ReviewdModel; 

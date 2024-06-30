@@ -76,20 +76,24 @@ exports.updateOne = (Model)=>asyncHandler(async (req, res, next) => {
     data: document,
   });
 });
+  
 
 
 
+exports.deleteOne = (Model) =>
+  asyncHandler(async (req, res, next) => {
+    const { id } = req.params;
+    const document = await Model.findByIdAndDelete(id);
 
-exports.deleteOne = (Model) => asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const document = await Model.findByIdAndDelete(id);
-  if (!document) {
-    return next(new ApiError(`No document found with this id => ${id}`, 404));  
-  }
-  // Trigger "remove" event when delete document to update quantity and avg of review
-  document.save();
-  res.status(200).send();
-});
+    if (!document) {
+      return next(new ApiError(`No document for this id ${id}`, 404));
+    }
+
+    // Trigger "remove" event when update document
+    await document.remove();
+    res.status(204).send();
+  });
+ 
 
 exports.deleteAll = (Model) =>asyncHandler(async(req, res) => {
   await Model.deleteMany();

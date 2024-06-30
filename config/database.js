@@ -7,6 +7,6 @@ const dbConnection = () => {
   }).catch((err) => {
     console.error(`Error connecting to DB ${err}`);
     process.exit(1);
-  });
+  }); 
 }
-module.exports = dbConnection; 
+module.exports = dbConnection;  
