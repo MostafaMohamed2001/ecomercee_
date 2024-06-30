@@ -128,3 +128,4 @@
 - `Role`: Represents user roles (`USER`, `ADMIN`, `MANAGER`)
 
 ### Swagger Docs
+` Waiting for documentation 🔥`
