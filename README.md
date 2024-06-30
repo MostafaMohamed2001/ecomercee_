@@ -82,7 +82,7 @@
 - `POST /api/v1/categories/:categoryId/subcategories`: Create Subcategory in a Category
 
 #### Products Routes 
-- <a href="https://google.com" target="_blank">`GET /api/v1/products`</a>: Get Products
+- <a href="https://ecomercee.onrender.com/api/v1/products" target="_blank">`GET /api/v1/products`</a>: Get Products
 - `POST /api/v1/products`: Create Product
 - `GET /api/v1/products/:id`: Get Product by ID
 - `PUT /api/v1/products/:id`: Update Product by ID
