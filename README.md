@@ -1,5 +1,5 @@
 
-# E-CoBuy ( say hi and buy )
+# E-CoBuy ( say hi and buy ) © 2024 E-CoBuy. All rights reserved.
 
 ## Node.js Full E-Commerce RESTful API
 
