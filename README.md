@@ -18,7 +18,7 @@
 ### Installation
 1. Clone the repository:
     ```bash
-    git clone https://github.com/alin00r/Node.js-Full-E-Commerce-RESTFul-App-with-Payment
+    git clone https://github.com/
     ```
 2. Initialize package.json (if not present):
     ```bash
